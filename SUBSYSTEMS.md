@@ -6,6 +6,11 @@
   - `guides/` - User guides and tutorials
   - `api/` - API reference documentation
   - `architecture/` - Architecture decision records and diagrams
+  - `mcp-servers/` - MCP server specific documentation
+    - `guides/` - MCP server guides (getting started, configuration, troubleshooting)
+    - `api/` - MCP server API reference
+    - `architecture/` - MCP server architecture documentation
+    - `protocols/` - MCP protocol specifications
 
 - `mcps/` - MCP Protocol implementations
   - `protocols/` - Core protocol definitions

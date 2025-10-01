@@ -1,0 +1,17 @@
+# Logging Configuration
+
+# Default log level
+LOG_LEVEL=INFO
+
+# Log format
+LOG_FORMAT=JSON
+
+# Log rotation settings
+LOG_MAX_SIZE=100MB
+LOG_MAX_FILES=10
+
+# Log retention
+LOG_RETENTION_DAYS=30
+
+# Services to log
+LOG_SERVICES=agents,servers,mcps

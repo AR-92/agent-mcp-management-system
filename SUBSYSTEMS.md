@@ -26,3 +26,11 @@
   - `unit/` - Unit tests
   - `integration/` - Integration tests
   - `e2e/` - End-to-end tests
+
+- `logs/` - Log files organized by date, service, and log level
+
+- `monitoring/` - Monitoring configurations and tools
+  - `dashboards/` - Dashboard configurations for visualization tools
+  - `metrics/` - Metric collection and configuration files
+  - `alerts/` - Alert rules and configurations
+  - `healthchecks/` - Health check implementations and configurations

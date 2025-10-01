@@ -9,5 +9,7 @@ This repository contains the Agent MCP (Multi-Component Protocol) Management Sys
 - [Servers](./servers/) - Server implementations
 - [Agents](./agents/) - Agent implementations
 - [Tests](./tests/) - Test files
+- [Logs](./logs/) - Log files
+- [Monitoring](./monitoring/) - Monitoring configurations and tools
 
 For a detailed breakdown of the project structure, see [SUBSYSTEMS.md](./SUBSYSTEMS.md).

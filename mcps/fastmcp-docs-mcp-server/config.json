@@ -1,0 +1,17 @@
+{
+  "name": "FastMCP Documentation Server",
+  "description": "A professional MCP server for providing access to FastMCP documentation",
+  "version": "1.0.0",
+  "debug": true,
+  "host": "127.0.0.1",
+  "port": 8001,
+  "docs_path": "/home/rana/Documents/agent-mcp-managnet-system/docs/fastmcp_docs",
+  "security": {
+    "restrict_file_access": true,
+    "validate_paths": true
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  }
+}

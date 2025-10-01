@@ -1,105 +1,127 @@
-# Agent MCP Management System
+# Simple MCP Management System
 
-This repository contains the Agent MCP (Multi-Component Protocol) Management System.
-
-## MCP Server Management
-
-This project now includes a professional centralized management system for controlling all MCP servers with a single interface:
-
-- **Dynamic Discovery**: Automatically discovers all MCP servers in the mcps/ directory
-- **Start/Stop/Restart**: Control individual or all servers at once
-- **Status Monitoring**: Monitor running status, CPU, memory, and uptime
-- **Health Checks**: Perform detailed health checks on individual or all servers
-- **Log Management**: View logs for any server with advanced log utilities
-- **System Information**: Get detailed system resource information
-- **Configuration Export**: Export current configuration settings
-- **Graceful Operations**: Support for graceful restarts with proper shutdown handling
-- **Signal Handling**: Proper signal handling for graceful shutdown on interrupts
-- **Centralized Configuration**: Manage all settings from a single `.env` file with port management
-- **Docker Integration**: Full support for Docker deployments with resource limits and container management
-- **Environment Control**: Different configurations for development, staging, and production
-- **Comprehensive Monitoring**: Real-time health checks, performance metrics, and alerting
-- **Metrics Dashboard**: Visual monitoring dashboard with real-time updates
-
-### Quick Start with Management System
-
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. Configure your settings in `.env`
-
-3. Start all servers:
-   ```bash
-   python mcp_manager.py start-all
-   ```
-
-4. Check status:
-   ```bash
-   python mcp_manager.py status
-   ```
-
-5. View logs:
-   ```bash
-   python mcp_manager.py logs meta-fastmcp-mcp-server
-   ```
-
-6. Monitor servers:
-   ```bash
-   python mcp_manager.py monitor
-   # or
-   python monitoring/dashboard.py watch
-   ```
-
-For full usage instructions, see [MANAGER-README.md](MANAGER-README.md).
-
-## Documentation
-
-- [Complete Setup Guide](RUNNING.md) - Detailed instructions for installation, configuration, and operation
-- [Quick Start Guide](QUICKSTART.md) - Immediate getting started instructions
-- [Manager Documentation](MANAGER-README.md) - MCP manager specific documentation
-- [Monitoring Documentation](monitoring/README.md) - Monitoring system documentation
-- [Logging Documentation](logs/README.md) - Logging system documentation
-- [Qwen Integration Guide](QWEN_INTEGRATION.md) - Instructions for integrating with Qwen's global configuration
-
-### Docker Deployment
-
-For Docker deployments, use the `docker.env` file with appropriate settings:
-
-```bash
-# Example for Docker deployment
-DOCKER_MODE=true
-START_ON_BOOT=true
-ENVIRONMENT=production
-CONTAINER_MEMORY_LIMIT=2g
-```
+A simplified MCP (Model Context Protocol) server management system with essential functionality to manage multiple MCP servers with Qwen integration.
 
 ## Project Structure
 
-- [Documentation](./docs/) - Project documentation
-- [MCP Protocols](./mcps/) - MCP protocol implementations (automatically discovered)
-- [Servers](./servers/) - Server implementations
-- [Agents](./agents/) - Agent implementations
-- [Tests](./tests/) - Test files
-- [Logs](./logs/) - **NEW: Comprehensive log management including:**
-  - [Log Manager](logs/log_manager.py) - Centralized logging with rotation and archiving
-  - [Log Utility](logs/log_util.py) - Command-line tool for log management
-  - [Server Logs](logs/mcp_servers/) - Individual server logs
-  - [Manager Logs](logs/manager/) - Manager application logs
-  - [Monitoring Logs](logs/monitoring/) - Monitoring system logs
-- [Monitoring](./monitoring/) - **NEW: Comprehensive monitoring system including:**
-  - [Monitoring Service](monitoring/monitor_service.py) - Real-time server monitoring
-  - [Dashboard](monitoring/dashboard.py) - Visual metrics dashboard
-  - [Configuration](monitoring/monitoring_config.env) - Monitoring settings
-  - [Data Directory](monitoring/data/) - Stored metrics and logs
-- [Scripts](./scripts/) - **NEW: Utility scripts including:**
-  - [Qwen MCP Manager](scripts/qwen_mcp_manager.py) - Python script for Qwen integration
-  - [Shell Wrapper](scripts/qwen-mcp-manager.sh) - Convenient shell script wrapper
-  - [Qwen Integration Documentation](scripts/README.md) - Documentation for Qwen integration
-- [Qwen Integration](QWEN_INTEGRATION.md) - Complete guide for integrating with Qwen
-- [MCP Manager](mcp_manager.py) - Centralized control script with dynamic discovery
-- [Configuration](.env) - Centralized configuration file
-- [Docker Config](docker.env) - Docker-specific configuration template
+```
+.
+├── simple_mcp_manager.py      # Simple manager for MCP servers
+├── requirements.txt          # Dependencies
+├── mcps/                   # MCP server implementations
+│   ├── simple_meta_fastmcp_server.py
+│   └── simple_fastmcp_docs_server.py
+└── docs/                   # Documentation directory
+    └── fastmcp_docs/       # FastMCP documentation
+```
 
-For a detailed breakdown of the project structure, see [SUBSYSTEMS.md](./SUBSYSTEMS.md).
+## Features
+
+- **Simple Management**: Start, stop, restart, and monitor MCP servers
+- **Qwen Integration**: Automatic integration with Qwen configuration
+- **Documentation Server**: Access FastMCP documentation via MCP
+- **Meta Server**: Tools for creating new MCP servers and managing configurations
+- **Comprehensive Tools**: All essential MCP components (tools, resources, prompts)
+
+## Installation
+
+1. Install the required dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+## Usage
+
+### Managing MCP Servers
+
+Start all servers:
+```bash
+python simple_mcp_manager.py start-all
+```
+
+Stop all servers:
+```bash
+python simple_mcp_manager.py stop-all
+```
+
+Start a specific server:
+```bash
+python simple_mcp_manager.py start simple-meta-fastmcp-server
+```
+
+Check status of all servers:
+```bash
+python simple_mcp_manager.py status
+```
+
+### Qwen Integration
+
+Integrate MCP servers with Qwen:
+```bash
+python simple_mcp_manager.py integrate
+```
+
+List integrated MCPs:
+```bash
+python simple_mcp_manager.py list-qwen
+```
+
+Get Qwen configuration path:
+```bash
+python simple_mcp_manager.py qwen-config-path
+```
+
+## Servers
+
+### Simple Meta MCP Server
+
+Provides utilities for managing and creating MCP servers:
+
+**Tools:**
+- `create_mcp_skeleton`: Create a skeleton for a new MCP server
+- `validate_mcp_config`: Validate MCP configuration content
+- `analyze_existing_mcp`: Analyze existing MCP server code
+- `run_system_command`: Execute system commands safely
+- `generate_mcp_project`: Generate a complete MCP project
+
+**Resources:**
+- `get_server_info`: Server information
+- `get_system_metrics`: System metrics
+- `get_config_templates`: Configuration templates
+
+**Prompts:**
+- `mcp_implementation_guide`: Implementation guides
+- `mcp_security_checklist`: Security checklists
+- `error_resolution_prompt`: Error resolution guides
+
+### Simple FastMCP Documentation Server
+
+Provides access to FastMCP documentation:
+
+**Tools:**
+- `list_documentation_sections`: List documentation sections
+- `search_documentation`: Search documentation by query
+- `read_documentation_file`: Read specific documentation files
+- `get_section_files`: Get files in a documentation section
+- `find_examples_for_feature`: Find examples for specific features
+
+**Resources:**
+- `get_documentation_toc`: Documentation table of contents
+- `get_latest_docs_updates`: Get recently updated docs
+- `get_documentation_stats`: Documentation statistics
+- `get_server_health`: Server health status
+
+**Prompts:**
+- `explain_fastmcp_concept`: Explain FastMCP concepts
+- `implementation_guide_prompt`: Implementation guides
+- `best_practices_prompt`: Best practices
+- `comparison_prompt`: Feature comparisons
+- `troubleshooting_prompt`: Troubleshooting guides
+
+## Configuration
+
+The system uses environment variables for configuration (via `.env` file):
+
+- `START_ON_BOOT`: Start servers on boot (default: false)
+- `SHUTDOWN_ON_EXIT`: Shutdown servers on exit (default: true)
+- `ENVIRONMENT`: Environment name (default: development)

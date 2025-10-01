@@ -1,9 +1,0 @@
-# Production requirements
-fastmcp>=2.0.0
-pydantic>=2.0.0
-anyio>=4.0.0
-httpx>=0.25.0
-
-# Development/testing requirements
-pytest>=7.0.0
-pytest-asyncio>=0.20.0

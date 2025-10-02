@@ -1,127 +1,128 @@
-# Simple MCP Management System
+# Agent MCP Management System
 
-A simplified MCP (Model Context Protocol) server management system with essential functionality to manage multiple MCP servers with Qwen integration.
+This project provides a comprehensive framework for managing Model Context Protocol (MCP) services through intelligent agents built with the Strands Agents SDK.
 
-## Project Structure
+## Overview
 
-```
-.
-├── simple_mcp_manager.py      # Simple manager for MCP servers
-├── requirements.txt          # Dependencies
-├── mcps/                   # MCP server implementations
-│   ├── simple_meta_fastmcp_server.py
-│   └── simple_fastmcp_docs_server.py
-└── docs/                   # Documentation directory
-    └── fastmcp_docs/       # FastMCP documentation
-```
+This system contains various MCP servers and corresponding agents that provide access to external tools and services for LLMs. The agents enable LLMs to interact with different systems like email, CRM, system administration tools, documentation, and more through standardized interfaces.
 
-## Features
+## MCP Servers
 
-- **Simple Management**: Start, stop, restart, and monitor MCP servers
-- **Qwen Integration**: Automatic integration with Qwen configuration
-- **Documentation Server**: Access FastMCP documentation via MCP
-- **Meta Server**: Tools for creating new MCP servers and managing configurations
-- **Comprehensive Tools**: All essential MCP components (tools, resources, prompts)
+The `/mcps` directory contains various MCP servers that expose functionality through the Model Context Protocol:
 
-## Installation
+- `backup_restore_mcp_server.py` - Backup and restore operations
+- `chatbot_mcp_server.py` - Chatbot functionality
+- `customer_feedback_mcp_server.py` - Customer feedback management
+- `discord_mcp_server.py` - Discord integration
+- `dokploy_mcp_server.py` - Dokploy deployment management
+- `fastmcp_docs_server.py` - FastMCP documentation access
+- `firewall_mcp_server.py` - Firewall management
+- `gmail_mcp_server.py` - Gmail operations
+- `go_high_level_mcp_server.py` - Go High Level CRM operations
+- `google_calendar_mcp_server.py` - Google Calendar operations
+- `google_docs_mcp_server.py` - Google Docs operations
+- `google_drive_mcp_server.py` - Google Drive operations
+- `google_forms_mcp_server.py` - Google Forms operations
+- `google_meet_mcp_server.py` - Google Meet operations
+- `google_sheets_mcp_server.py` - Google Sheets operations
+- `interview_scheduler_mcp_server.py` - Interview scheduling
+- `invoice_mcp_server.py` - Invoice management
+- `linux_admin_mcp_server.py` - Linux system administration
+- `log_viewer_mcp_server.py` - Log viewing and analysis
+- `mailchimp_mcp_server.py` - Mailchimp integration
+- `meta_fastmcp_server.py` - Meta MCP operations
+- `payment_reminder_mcp_server.py` - Payment reminders
+- `port_scanner_mcp_server.py` - Network port scanning
+- `process_manager_mcp_server.py` - Process management
+- `proposal_generator_mcp_server.py` - Proposal generation
+- `server_health_mcp_server.py` - Server health monitoring
+- `slack_mcp_server.py` - Slack integration
+- `smtp_mcp_server.py` - SMTP email operations
+- `system_monitoring_mcp_server.py` - System monitoring
+- `trello_mcp_server.py` - Trello integration
+- `twenty_crm_mcp_server.py` - Twenty CRM operations
+- `woocommerce_mcp_server.py` - WooCommerce operations
 
-1. Install the required dependencies:
-```bash
-pip install -r requirements.txt
-```
+## Agents
+
+The `/agents` directory contains intelligent agents built with the Strands Agents SDK that utilize the MCP services:
+
+### Basic Agents
+- `simple_agent.py` - Basic functionality with time, calculator, echo, system info tools
+- `file_operations_agent.py` - File system operations agent
+
+### Communication & Collaboration Agents
+- `email_management_agent.py` - Email operations using Gmail, SMTP, and Google Calendar
+- `gmail_agent.py` - Gmail-specific operations
+- `smtp_email_agent.py` - SMTP email operations
+- `discord_agent.py` - Discord integration
+- `slack_mcp_server.py` - Slack integration
+- `google_calendar_mcp_server.py` - Google Calendar operations
+- `google_meet_mcp_server.py` - Google Meet operations
+- `trello_mcp_server.py` - Trello integration
+- `google_forms_mcp_server.py` - Google Forms operations
+- `collaboration_agent.py` - Multi-platform collaboration tools
+
+### Business Operations Agents
+- `business_ops_agent.py` - Multi-business operations
+- `crm_business_ops_agent.py` - CRM and business operations combining Twenty CRM, Go High Level, Customer Feedback, Invoice, Proposal Generator, Interview Scheduler, and Mailchimp
+- `ghl_crm_agent.py` - Go High Level CRM
+- `twenty_crm_mcp_server.py` - Twenty CRM operations
+- `customer_feedback_mcp_server.py` - Customer feedback management
+- `invoice_mcp_server.py` - Invoice management
+- `proposal_generator_mcp_server.py` - Proposal generation
+- `interview_scheduler_mcp_server.py` - Interview scheduling
+- `mailchimp_mcp_server.py` - Mailchimp marketing operations
+- `payment_reminder_agent.py` - Payment reminder operations
+
+### System & DevOps Agents
+- `system_admin_agent.py` - System administration combining Linux Admin, Process Manager, Server Health, Log Viewer, Firewall
+- `security_monitoring_agent.py` - Security monitoring combining Firewall, Server Health, System Monitoring, Port Scanner
+- `devops_agent.py` - DevOps operations combining Dokploy, Linux admin, system monitoring
+- `dokploy_mcp_server.py` - Dokploy deployment management
+- `linux_admin_mcp_server.py` - Linux system administration
+- `server_health_mcp_server.py` - Server health monitoring
+- `system_monitoring_mcp_server.py` - System monitoring
+- `process_manager_mcp_server.py` - Process management
+- `log_viewer_mcp_server.py` - Log viewing and analysis
+- `firewall_mcp_server.py` - Firewall management
+- `port_scanner_mcp_server.py` - Network port scanning
+
+### Documentation & Data Management Agents
+- `doc_sys_management_agent.py` - Documentation and system management combining Dokploy, Google Drive, Google Docs, Google Sheets
+- `fastmcp_docs_agent.py` - FastMCP documentation access
+- `google_drive_mcp_server.py` - Google Drive operations
+- `google_docs_mcp_server.py` - Google Docs operations
+- `google_sheets_agent.py` - Google Sheets operations
+
+### E-commerce & Specialized Agents
+- `ecommerce_agent.py` - WooCommerce e-commerce operations
+- `woocommerce_mcp_server.py` - WooCommerce operations
+- `backup_restore_agent.py` - Backup and restore operations
+- `chatbot_agent.py` - Chatbot operations
+
+## Requirements
+
+- Python 3.8+
+- `strandsagents` - The Strands Agents SDK
+- `fastmcp` - FastMCP framework
+- `psutil` - System monitoring
+- `python-dotenv` - Environment variable management
 
 ## Usage
 
-### Managing MCP Servers
+Each agent can be run independently using Python:
 
-Start all servers:
 ```bash
-python simple_mcp_manager.py start-all
+python agents/simple_agent.py
 ```
 
-Stop all servers:
-```bash
-python simple_mcp_manager.py stop-all
-```
+The agents are designed to work with LLMs that support the Model Context Protocol, enabling AI systems to access external tools and services.
 
-Start a specific server:
-```bash
-python simple_mcp_manager.py start simple-meta-fastmcp-server
-```
+## Documentation
 
-Check status of all servers:
-```bash
-python simple_mcp_manager.py status
-```
+The `/docs/strandagents-docs/` directory contains comprehensive documentation for the Strands Agents SDK with examples for implementing agents, tools, and multi-agent systems.
 
-### Qwen Integration
+## Architecture
 
-Integrate MCP servers with Qwen:
-```bash
-python simple_mcp_manager.py integrate
-```
-
-List integrated MCPs:
-```bash
-python simple_mcp_manager.py list-qwen
-```
-
-Get Qwen configuration path:
-```bash
-python simple_mcp_manager.py qwen-config-path
-```
-
-## Servers
-
-### Simple Meta MCP Server
-
-Provides utilities for managing and creating MCP servers:
-
-**Tools:**
-- `create_mcp_skeleton`: Create a skeleton for a new MCP server
-- `validate_mcp_config`: Validate MCP configuration content
-- `analyze_existing_mcp`: Analyze existing MCP server code
-- `run_system_command`: Execute system commands safely
-- `generate_mcp_project`: Generate a complete MCP project
-
-**Resources:**
-- `get_server_info`: Server information
-- `get_system_metrics`: System metrics
-- `get_config_templates`: Configuration templates
-
-**Prompts:**
-- `mcp_implementation_guide`: Implementation guides
-- `mcp_security_checklist`: Security checklists
-- `error_resolution_prompt`: Error resolution guides
-
-### Simple FastMCP Documentation Server
-
-Provides access to FastMCP documentation:
-
-**Tools:**
-- `list_documentation_sections`: List documentation sections
-- `search_documentation`: Search documentation by query
-- `read_documentation_file`: Read specific documentation files
-- `get_section_files`: Get files in a documentation section
-- `find_examples_for_feature`: Find examples for specific features
-
-**Resources:**
-- `get_documentation_toc`: Documentation table of contents
-- `get_latest_docs_updates`: Get recently updated docs
-- `get_documentation_stats`: Documentation statistics
-- `get_server_health`: Server health status
-
-**Prompts:**
-- `explain_fastmcp_concept`: Explain FastMCP concepts
-- `implementation_guide_prompt`: Implementation guides
-- `best_practices_prompt`: Best practices
-- `comparison_prompt`: Feature comparisons
-- `troubleshooting_prompt`: Troubleshooting guides
-
-## Configuration
-
-The system uses environment variables for configuration (via `.env` file):
-
-- `START_ON_BOOT`: Start servers on boot (default: false)
-- `SHUTDOWN_ON_EXIT`: Shutdown servers on exit (default: true)
-- `ENVIRONMENT`: Environment name (default: development)
+The system follows the Model Context Protocol (MCP) standard, enabling LLMs to access external tools and services through standardized interfaces. The Strands Agents SDK provides the framework for creating intelligent agents that can coordinate multiple MCP services for complex operations.

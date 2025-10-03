@@ -20,10 +20,17 @@ wheels/
 .installed.cfg
 *.egg
 
+# Setup/distribution files
+setup.py
+MANIFEST
+MANIFEST.in
+
 # Logs
 logs/
 *.log
 monitoring.log
+dokploy_*.log
+manager.log
 
 # Environment variables
 .env
@@ -31,6 +38,7 @@ docker.env
 
 # Process IDs
 *.pid
+pids.json
 
 # OS
 .DS_Store
@@ -44,4 +52,10 @@ Thumbs.db
 
 # Data
 data/
-*.json
+# NOTE: Be careful - excluding all *.json files might exclude config.json which is needed
+# Only excluding specific runtime JSON files instead
+pids.json
+*.pid.json
+
+# Scripts
+run_with_no_cache.sh

@@ -1,128 +1,198 @@
-# Agent MCP Management System
+# Improved FZF Enhanced MCP Server Manager
 
-This project provides a comprehensive framework for managing Model Context Protocol (MCP) services through intelligent agents built with the Strands Agents SDK.
+An enhanced command-line interface for managing MCP (Model Context Protocol) servers with fzf integration for the ultimate fuzzy selection experience. This improved version includes streamlined menus, batch operations, and enhanced UX.
 
-## Overview
+## 🔄 FZF-Powered Interface (Default)
 
-This system contains various MCP servers and corresponding agents that provide access to external tools and services for LLMs. The agents enable LLMs to interact with different systems like email, CRM, system administration tools, documentation, and more through standardized interfaces.
+This is now the improved fzf-enhanced version that provides an interactive interface with powerful fuzzy search capabilities for all MCP server management operations, featuring streamlined navigation and enhanced functionality.
 
-## MCP Servers
+## 🚀 Features
 
-The `/mcps` directory contains various MCP servers that expose functionality through the Model Context Protocol:
+- **FZF Integration**: Full integration with system fzf for powerful fuzzy search and selection
+- **Interactive Menus**: Navigate all options through fzf-driven menus
+- **Fuzzy Server Selection**: Find and select servers with partial names and fuzzy matching
+- **Comprehensive Management**: Start, stop, restart, and monitor MCP servers
+- **Qwen Integration**: Seamlessly integrate with Qwen for enhanced functionality
+- **Dual Mode**: Command-line interface with fzf fallback for interactive mode
+- **Enhanced Discovery**: Fuzzy matching helps find servers even with partial names
+- **Streamlined Menu Structure**: Reduced redundancy and improved navigation flow
+- **Dashboard View**: Comprehensive overview of all server statuses in one view
+- **Batch Operations**: Manage multiple servers simultaneously with multi-select capability
+- **Quick Actions**: Common operations accessible from the main menu
+- **Direct Config Toggles**: Quick configuration changes without deep navigation
+- **Simplified Exit**: Direct exit without confirmation prompts
+- **Environment (.env) Management**: Create, edit, view, delete, and validate .env files
 
-- `backup_restore_mcp_server.py` - Backup and restore operations
-- `chatbot_mcp_server.py` - Chatbot functionality
-- `customer_feedback_mcp_server.py` - Customer feedback management
-- `discord_mcp_server.py` - Discord integration
-- `dokploy_mcp_server.py` - Dokploy deployment management
-- `fastmcp_docs_server.py` - FastMCP documentation access
-- `firewall_mcp_server.py` - Firewall management
-- `gmail_mcp_server.py` - Gmail operations
-- `go_high_level_mcp_server.py` - Go High Level CRM operations
-- `google_calendar_mcp_server.py` - Google Calendar operations
-- `google_docs_mcp_server.py` - Google Docs operations
-- `google_drive_mcp_server.py` - Google Drive operations
-- `google_forms_mcp_server.py` - Google Forms operations
-- `google_meet_mcp_server.py` - Google Meet operations
-- `google_sheets_mcp_server.py` - Google Sheets operations
-- `interview_scheduler_mcp_server.py` - Interview scheduling
-- `invoice_mcp_server.py` - Invoice management
-- `linux_admin_mcp_server.py` - Linux system administration
-- `log_viewer_mcp_server.py` - Log viewing and analysis
-- `mailchimp_mcp_server.py` - Mailchimp integration
-- `meta_fastmcp_server.py` - Meta MCP operations
-- `payment_reminder_mcp_server.py` - Payment reminders
-- `port_scanner_mcp_server.py` - Network port scanning
-- `process_manager_mcp_server.py` - Process management
-- `proposal_generator_mcp_server.py` - Proposal generation
-- `server_health_mcp_server.py` - Server health monitoring
-- `slack_mcp_server.py` - Slack integration
-- `smtp_mcp_server.py` - SMTP email operations
-- `system_monitoring_mcp_server.py` - System monitoring
-- `trello_mcp_server.py` - Trello integration
-- `twenty_crm_mcp_server.py` - Twenty CRM operations
-- `woocommerce_mcp_server.py` - WooCommerce operations
+## 📦 Installation
 
-## Agents
-
-The `/agents` directory contains intelligent agents built with the Strands Agents SDK that utilize the MCP services:
-
-### Basic Agents
-- `simple_agent.py` - Basic functionality with time, calculator, echo, system info tools
-- `file_operations_agent.py` - File system operations agent
-
-### Communication & Collaboration Agents
-- `email_management_agent.py` - Email operations using Gmail, SMTP, and Google Calendar
-- `gmail_agent.py` - Gmail-specific operations
-- `smtp_email_agent.py` - SMTP email operations
-- `discord_agent.py` - Discord integration
-- `slack_mcp_server.py` - Slack integration
-- `google_calendar_mcp_server.py` - Google Calendar operations
-- `google_meet_mcp_server.py` - Google Meet operations
-- `trello_mcp_server.py` - Trello integration
-- `google_forms_mcp_server.py` - Google Forms operations
-- `collaboration_agent.py` - Multi-platform collaboration tools
-
-### Business Operations Agents
-- `business_ops_agent.py` - Multi-business operations
-- `crm_business_ops_agent.py` - CRM and business operations combining Twenty CRM, Go High Level, Customer Feedback, Invoice, Proposal Generator, Interview Scheduler, and Mailchimp
-- `ghl_crm_agent.py` - Go High Level CRM
-- `twenty_crm_mcp_server.py` - Twenty CRM operations
-- `customer_feedback_mcp_server.py` - Customer feedback management
-- `invoice_mcp_server.py` - Invoice management
-- `proposal_generator_mcp_server.py` - Proposal generation
-- `interview_scheduler_mcp_server.py` - Interview scheduling
-- `mailchimp_mcp_server.py` - Mailchimp marketing operations
-- `payment_reminder_agent.py` - Payment reminder operations
-
-### System & DevOps Agents
-- `system_admin_agent.py` - System administration combining Linux Admin, Process Manager, Server Health, Log Viewer, Firewall
-- `security_monitoring_agent.py` - Security monitoring combining Firewall, Server Health, System Monitoring, Port Scanner
-- `devops_agent.py` - DevOps operations combining Dokploy, Linux admin, system monitoring
-- `dokploy_mcp_server.py` - Dokploy deployment management
-- `linux_admin_mcp_server.py` - Linux system administration
-- `server_health_mcp_server.py` - Server health monitoring
-- `system_monitoring_mcp_server.py` - System monitoring
-- `process_manager_mcp_server.py` - Process management
-- `log_viewer_mcp_server.py` - Log viewing and analysis
-- `firewall_mcp_server.py` - Firewall management
-- `port_scanner_mcp_server.py` - Network port scanning
-
-### Documentation & Data Management Agents
-- `doc_sys_management_agent.py` - Documentation and system management combining Dokploy, Google Drive, Google Docs, Google Sheets
-- `fastmcp_docs_agent.py` - FastMCP documentation access
-- `google_drive_mcp_server.py` - Google Drive operations
-- `google_docs_mcp_server.py` - Google Docs operations
-- `google_sheets_agent.py` - Google Sheets operations
-
-### E-commerce & Specialized Agents
-- `ecommerce_agent.py` - WooCommerce e-commerce operations
-- `woocommerce_mcp_server.py` - WooCommerce operations
-- `backup_restore_agent.py` - Backup and restore operations
-- `chatbot_agent.py` - Chatbot operations
-
-## Requirements
-
-- Python 3.8+
-- `strandsagents` - The Strands Agents SDK
-- `fastmcp` - FastMCP framework
-- `psutil` - System monitoring
-- `python-dotenv` - Environment variable management
-
-## Usage
-
-Each agent can be run independently using Python:
-
+1. Clone the repository:
 ```bash
-python agents/simple_agent.py
+git clone https://github.com/yourusername/mcp-server-manager.git
+cd mcp-server-manager
 ```
 
-The agents are designed to work with LLMs that support the Model Context Protocol, enabling AI systems to access external tools and services.
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-## Documentation
+3. Install fzf on your system (recommended):
+```bash
+# Arch Linux
+sudo pacman -S fzf
 
-The `/docs/strandagents-docs/` directory contains comprehensive documentation for the Strands Agents SDK with examples for implementing agents, tools, and multi-agent systems.
+# Ubuntu/Debian  
+sudo apt install fzf
 
-## Architecture
+# macOS
+brew install fzf
+```
 
-The system follows the Model Context Protocol (MCP) standard, enabling LLMs to access external tools and services through standardized interfaces. The Strands Agents SDK provides the framework for creating intelligent agents that can coordinate multiple MCP services for complex operations.
+## 🛠️ Usage
+
+### Command Line Interface
+
+```bash
+# Show help
+python cli.py --help
+
+# Server management
+python cli.py start my-server
+python cli.py stop my-server
+python cli.py status
+python cli.py restart my-server
+
+# Configuration management
+python cli.py config-show
+python cli.py integrate
+python cli.py list-qwen
+
+# Use partial server names for fuzzy matching
+python cli.py start backup    # Will match 'backup_restore_mcp_server'
+python cli.py stop dokploy    # Will match 'dokploy_openapi_mcp_server'
+
+# Interactive mode with full fzf navigation
+python cli.py --fzf
+python cli.py interactive
+python cli.py fzf
+
+# Run without arguments to enter interactive mode (if in TTY)
+python cli.py
+```
+
+### Interactive Mode Features
+
+When run without arguments in an interactive terminal (or with --fzf flag), the CLI provides:
+
+- **Main Menu**: Navigate between server management, configuration, and Qwen integration
+- **Server Management**: Start, stop, restart servers with fzf selection
+- **Configuration Management**: View and manage server configurations
+- **Qwen Integration**: Integrate servers with Qwen using fzf
+- **Status Display**: Show server status with one click
+
+## ⚡ Quick Start Examples
+
+```bash
+# Start interactive fzf mode (recommended)
+python cli.py
+
+# Or start directly with fzf flag
+python cli.py --fzf
+
+# Command line with fuzzy matching
+python cli.py start backup    # Fuzzy matches server names
+python cli.py status          # Show all server statuses
+python cli.py integrate       # Integrate with Qwen
+```
+
+## Configuration
+
+The tool uses a `config.json` file in the project root to manage server configurations:
+
+```json
+{
+  "server_config": {
+    "start_on_boot": false,
+    "shutdown_on_exit": false,
+    "environment": "development",
+    "servers": {
+      "my-server": {
+        "enabled": true,
+        "start_on_boot": false,
+        "add_to_qwen": true
+      }
+    }
+  }
+}
+```
+
+## Commands
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `status` | `st` | Show status of all servers |
+| `dashboard` | - | Show comprehensive dashboard view |
+| `start <server>` | `s <server>` | Start a specific server |
+| `stop <server>` | `sp <server>` | Stop a specific server |
+| `restart <server>` | `r <server>` | Restart a specific server |
+| `start-all` | `sa` | Start all servers |
+| `stop-all` | `spa` | Stop all servers |
+| `restart-all` | `ra` | Restart all servers |
+| `integrate` | `int` | Integrate MCPs with Qwen |
+| `list-qwen` | `lq` | List integrated MCPs |
+| `remove-all-qwen` | - | Remove all MCPs from Qwen |
+| `qwen-config-path` | `qcp` | Show Qwen config path |
+| `config-show` | `cfg` | Show current configuration |
+| `config-list` | `clist` | List server configurations |
+| `config-edit` | `cedit` | Edit server configuration |
+| `list` | `ls` | List discovered servers |
+| `env` | - | Manage environment (.env) files |
+| `env-create` | - | Create .env file |
+| `env-edit` | - | Edit .env file |
+| `env-view` | - | View .env file contents |
+| `env-delete` | - | Delete .env file |
+| `env-validate` | - | Validate .env file format |
+| `interactive`/`fzf` | - | Start interactive fzf mode |
+| `--fzf` | flag | Start interactive fzf mode |
+
+## FZF Integration
+
+This CLI is built around system-wide fzf (fuzzy finder) integration, providing:
+
+- Rich, interactive search interface
+- Preview capabilities
+- Better performance with large lists
+- Multi-selection support
+- Keyboard shortcuts and navigation
+- Fuzzy matching for all selection operations
+
+## 🏗️ Architecture
+
+The application is designed around fzf integration:
+
+- **FZF Interface**: Main application logic with fzf-driven selection
+- **Server Manager**: Handles server lifecycle (start, stop, restart, status)
+- **Qwen Manager**: Handles Qwen integration and settings
+- **Configuration Management**: Manages server configurations with fzf selection
+- **Dual Mode**: Supports both command-line and interactive fzf modes
+
+## 🛠️ Customization
+
+You can customize the application by:
+
+1. Modifying the configuration in `config.json`
+2. Adding new MCP server files to the `mcps/` directory
+3. Adjusting fzf options in the CLI code
+4. Extending the interactive menus as needed
+
+## 🔧 Troubleshooting
+
+- If you see "fzf not found" errors, install fzf on your system
+- If interactive mode doesn't start, ensure you're running in an interactive terminal
+- For issues with partial name matching, ensure server names exist in your configuration
+- Check the log file `manager.log` for detailed error information
+- Use `python cli.py --help` for command assistance
+
+## License
+
+MIT

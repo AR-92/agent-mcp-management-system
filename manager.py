@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Simple MCP Server Manager
+Simple MCP Server Manager - Non-Interactive Version
 
 Minimal control script to start, stop, and manage MCP servers with Qwen integration.
+This version removes all interactive modes and features.
 """
 
 import os
@@ -12,6 +13,10 @@ import signal
 import time
 import argparse
 import json
+
+# Disable bytecode file generation
+sys.dont_write_bytecode = True
+
 from pathlib import Path
 from typing import List, Dict, Any
 import psutil  # Still needed for process management
@@ -29,16 +34,16 @@ class SimpleMCPServerManager:
         self.project_root = Path(__file__).parent.resolve()
         self.mcps_dir = self.project_root / "mcps"
         self.log_file = self.project_root / "manager.log"
+        self.config_file = self.project_root / "config.json"
         
-        # Basic configuration with sensible defaults
-        self.start_on_boot = os.getenv("START_ON_BOOT", "false").lower() == "true"
-        self.shutdown_on_exit = os.getenv("SHUTDOWN_ON_EXIT", "true").lower() == "true"
-        self.environment = os.getenv("ENVIRONMENT", "development")
+        # Load configuration from config file if it exists, otherwise use defaults
+        self._load_config()
         
-        # Initialize basic logging
+        # Initialize basic logging with no output by default
         import logging
+        # Set logging level to suppress all logs by default
         logging.basicConfig(
-            level=logging.INFO,
+            level=999,  # A high number to suppress all logs (CRITICAL = 50, so 999 suppresses everything)
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         )
         self.logger = logging.getLogger('SimpleMCPServerManager')
@@ -58,38 +63,165 @@ class SimpleMCPServerManager:
         # Start services based on configuration
         self._initialize_services()
     
+    def _load_config(self):
+        """Load configuration from config.json file."""
+        try:
+            if self.config_file.exists():
+                with open(self.config_file, 'r') as f:
+                    config = json.load(f)
+                
+                server_config = config.get("server_config", {})
+                self.start_on_boot = server_config.get("start_on_boot", False)
+                self.shutdown_on_exit = server_config.get("shutdown_on_exit", True)
+                self.environment = server_config.get("environment", "development")
+            else:
+                # Use defaults if config file doesn't exist
+                self.start_on_boot = os.getenv("START_ON_BOOT", "false").lower() == "true"
+                self.shutdown_on_exit = os.getenv("SHUTDOWN_ON_EXIT", "true").lower() == "true"
+                self.environment = os.getenv("ENVIRONMENT", "development")
+        except Exception as e:
+            self.logger.error(f"Error loading config file: {e}")
+            # Use defaults if there's an error loading the config
+            self.start_on_boot = os.getenv("START_ON_BOOT", "false").lower() == "true"
+            self.shutdown_on_exit = os.getenv("SHUTDOWN_ON_EXIT", "true").lower() == "true"
+            self.environment = os.getenv("ENVIRONMENT", "development")
+    
     def _initialize_services(self):
         """Initialize services based on configuration."""
         if self.start_on_boot:
-            self.logger.info("Starting servers on boot...")
-            self.start_all()
+            self.logger.info("Starting servers on boot based on individual configurations...")
+            for server_name, server_config in self.servers.items():
+                if server_config.get("start_on_boot", False):
+                    self.logger.info(f"Starting {server_name} on boot based on server config")
+                    self.start_server(server_name)
         self.logger.info(f"Simple MCP Manager initialized in {self.environment} environment")
+    
+    def _generate_default_config(self):
+        """Generate a default config.json file based on discovered MCP files."""
+        if not self.mcps_dir.exists():
+            self.logger.warning(f"MCPs directory does not exist: {self.mcps_dir}")
+            return
+
+        # Discover all MCP files in the directory
+        mcp_servers = {}
+        for item in self.mcps_dir.iterdir():
+            if item.is_file() and item.suffix == ".py" and item.name != "__init__.py":
+                server_name = item.name[:-3]  # Remove .py extension
+                # Set all defaults to false as requested
+                mcp_servers[server_name] = {
+                    "enabled": False,
+                    "start_on_boot": False,
+                    "add_to_qwen": False
+                }
+
+        # Create the default config structure
+        default_config = {
+            "server_config": {
+                "start_on_boot": False,
+                "shutdown_on_exit": False,
+                "environment": "development",
+                "servers": mcp_servers
+            }
+        }
+
+        # Write the default config to file
+        with open(self.config_file, 'w') as f:
+            json.dump(default_config, f, indent=2)
+        
+        self.logger.info(f"Generated default config.json with {len(mcp_servers)} discovered servers")
     
     def _discover_servers(self) -> Dict[str, Dict]:
         """Dynamically discover all MCP servers in the mcps directory."""
+        # If config file doesn't exist, automatically generate it
+        if not self.config_file.exists():
+            self._generate_default_config()
+        
         servers = {}
         
         if not self.mcps_dir.exists():
             self.logger.warning(f"MCPs directory does not exist: {self.mcps_dir}")
             return servers
-            
+        
+        # Load server configuration if it exists
+        enabled_servers = None
+        config_servers = {}
+        
+        if self.config_file.exists():
+            try:
+                with open(self.config_file, 'r') as f:
+                    config = json.load(f)
+                config_servers = config.get("server_config", {}).get("servers", {})
+            except Exception as e:
+                self.logger.error(f"Error loading server config: {e}")
+                # If there's an error loading config, generate a default one
+                self._generate_default_config()
+                # Reload the config after generating
+                try:
+                    with open(self.config_file, 'r') as f:
+                        config = json.load(f)
+                    config_servers = config.get("server_config", {}).get("servers", {})
+                except Exception as e2:
+                    self.logger.error(f"Error loading generated config: {e2}")
+                    config_servers = {}
+
         # Get all Python files in mcps directory that are MCP servers
         for item in self.mcps_dir.iterdir():
             if item.is_file() and item.suffix == ".py" and item.name != "__init__.py":
                 # Use the file name without extension as the server name
                 server_name = item.name[:-3]  # Remove .py extension
                 
-                servers[server_name] = {
-                    "name": server_name,
-                    "dir": item.parent,
-                    "script": item.name,
-                    "process": None,
-                    "status": "stopped",
-                    "startup_time": None
-                }
+                # If this server is not in the config, add it with default false values
+                if server_name not in config_servers:
+                    config_servers[server_name] = {
+                        "enabled": False,
+                        "start_on_boot": False,
+                        "add_to_qwen": False
+                    }
+                    # Update the main config file with the new server
+                    self._update_config_with_new_server(server_name, config_servers[server_name])
+                
+                # Check if this server is enabled in config
+                server_config = config_servers.get(server_name, {})
+                is_enabled = server_config.get("enabled", False)  # Now defaults to False
+                
+                if is_enabled:
+                    servers[server_name] = {
+                        "name": server_name,
+                        "dir": item.parent,
+                        "script": item.name,
+                        "process": None,
+                        "status": "stopped",
+                        "startup_time": None,
+                        "start_on_boot": server_config.get("start_on_boot", False)
+                    }
         
-        self.logger.info(f"Discovered {len(servers)} MCP servers")
+        self.logger.info(f"Discovered {len(servers)} MCP servers (enabled)")
         return servers
+    
+    def _update_config_with_new_server(self, server_name, server_config):
+        """Update the config file with a newly discovered server."""
+        try:
+            # Load current config
+            if self.config_file.exists():
+                with open(self.config_file, 'r') as f:
+                    config = json.load(f)
+            else:
+                config = {"server_config": {"servers": {}}}
+            
+            # Ensure the servers section exists
+            if "server_config" not in config:
+                config["server_config"] = {"servers": {}}
+            if "servers" not in config["server_config"]:
+                config["server_config"]["servers"] = {}
+            
+            # Add the new server config
+            config["server_config"]["servers"][server_name] = server_config
+            
+            # Write updated config back to file
+            with open(self.config_file, 'w') as f:
+                json.dump(config, f, indent=2)
+        except Exception as e:
+            self.logger.error(f"Error updating config with new server {server_name}: {e}")
     
     def _signal_handler(self, signum, frame):
         """Handle system signals for graceful shutdown."""
@@ -393,6 +525,18 @@ class SimpleQwenMCPManager:
             print(f"Warning: MCP directory does not exist: {self.mcps_dir}")
             return mcps
         
+        # Load server configuration to check which servers to add to Qwen
+        config_file = self.project_root / "config.json"
+        qwen_servers = {}
+        
+        if config_file.exists():
+            try:
+                with open(config_file, 'r') as f:
+                    config = json.load(f)
+                qwen_servers = config.get("server_config", {}).get("servers", {})
+            except Exception as e:
+                print(f"Warning: Could not load server config: {e}")
+        
         # Scan for MCP server files
         for item in self.mcps_dir.iterdir():
             if item.is_file() and item.suffix == ".py" and item.name != "__init__.py":
@@ -401,16 +545,23 @@ class SimpleQwenMCPManager:
                 # Clean up common suffixes
                 clean_name = server_name.replace('-mcp-server', '').replace('-server', '').replace('-', ' ').title()
                 
-                mcp_info = {
-                    "id": server_name,
-                    "name": f"{clean_name} Server",
-                    "path": str(item.parent),
-                    "entryPoint": item.name,  # Use actual file name
-                    "enabled": True,
-                    "description": f"Automatically discovered MCP server: {clean_name}"
-                }
-                mcps.append(mcp_info)
-                print(f"Discovered MCP server: {server_name}")
+                # Check if this server should be added to Qwen
+                server_config = qwen_servers.get(server_name, {})
+                add_to_qwen = server_config.get("add_to_qwen", True)  # Add to Qwen by default
+                
+                if add_to_qwen:
+                    mcp_info = {
+                        "id": server_name,
+                        "name": f"{clean_name} Server",
+                        "path": str(item.parent),
+                        "entryPoint": item.name,  # Use actual file name
+                        "enabled": True,
+                        "description": f"Automatically discovered MCP server: {clean_name}"
+                    }
+                    mcps.append(mcp_info)
+                    print(f"Discovered MCP server: {server_name} (adding to Qwen)")
+                else:
+                    print(f"Discovered MCP server: {server_name} (skipping - not adding to Qwen)")
         
         return mcps
     
@@ -501,7 +652,7 @@ class SimpleQwenMCPManager:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Simple MCP Server Manager",
+        description="Simple MCP Server Manager - Non-Interactive Version",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -511,14 +662,16 @@ Examples:
   %(prog)s restart my-server            # Restart a specific server
   %(prog)s integrate                    # Integrate MCPs with Qwen
   %(prog)s list-qwen                    # List integrated MCPs
+  %(prog)s config-show                  # Show current configuration
         """
     )
     parser.add_argument(
         "action", 
         choices=[
-            "start", "stop", "restart", "status", 
-            "start-all", "stop-all", "restart-all",
-            "integrate", "list-qwen", "remove-all-qwen", "qwen-config-path"
+            "start", "s", "stop", "sp", "restart", "r", "status", "st", 
+            "start-all", "sa", "stop-all", "spa", "restart-all", "ra",
+            "integrate", "int", "list-qwen", "lq", "remove-all-qwen", "qwen-config-path", "qcp",
+            "config-show", "cfg", "config-list", "clist", "config-edit", "cedit", "list", "ls"
         ],
         help="Action to perform"
     )
@@ -530,9 +683,40 @@ Examples:
     
     args = parser.parse_args()
     
+    # Handle command aliases
+    action = args.action
+    if action in ['s']:
+        action = 'start'
+    elif action in ['sp']:
+        action = 'stop'
+    elif action in ['r']:
+        action = 'restart'
+    elif action in ['st']:
+        action = 'status'
+    elif action in ['sa']:
+        action = 'start-all'
+    elif action in ['spa']:
+        action = 'stop-all'
+    elif action in ['ra']:
+        action = 'restart-all'
+    elif action in ['ls']:
+        action = 'list'
+    elif action in ['cfg']:
+        action = 'config-show'
+    elif action in ['clist']:
+        action = 'config-list'
+    elif action in ['cedit']:
+        action = 'config-edit'
+    elif action in ['int']:
+        action = 'integrate'
+    elif action in ['lq']:
+        action = 'list-qwen'
+    elif action in ['qcp']:
+        action = 'qwen-config-path'
+    
     manager = SimpleMCPServerManager()
     
-    if args.action == "start":
+    if action == "start":
         if args.server == "all":
             manager.start_all()
         elif args.server:
@@ -540,7 +724,7 @@ Examples:
         else:
             print("Please specify a server name or 'all'")
     
-    elif args.action == "stop":
+    elif action == "stop":
         if args.server == "all":
             manager.stop_all()
         elif args.server:
@@ -548,7 +732,7 @@ Examples:
         else:
             print("Please specify a server name or 'all'")
             
-    elif args.action == "restart":
+    elif action == "restart":
         if args.server == "all":
             manager.stop_all()
             time.sleep(2)  # Wait for all servers to stop
@@ -558,35 +742,219 @@ Examples:
         else:
             print("Please specify a server name or 'all'")
             
-    elif args.action == "status":
+    elif action == "status":
         manager.status()
     
-    elif args.action == "start-all":
+    elif action == "start-all":
         manager.start_all()
         
-    elif args.action == "stop-all":
+    elif action == "stop-all":
         manager.stop_all()
         
-    elif args.action == "restart-all":
+    elif action == "restart-all":
         manager.stop_all()
         time.sleep(2)  # Wait for all servers to stop
         manager.start_all()
     
-    elif args.action == "integrate":
+    elif action == "integrate":
         qwen_manager = SimpleQwenMCPManager(mcps_dir=manager.mcps_dir)
         qwen_manager.integrate_with_qwen()
     
-    elif args.action == "list-qwen":
+    elif action == "list-qwen":
         qwen_manager = SimpleQwenMCPManager(mcps_dir=manager.mcps_dir)
         qwen_manager.list_integrated_mcps()
     
-    elif args.action == "remove-all-qwen":
+    elif action == "remove-all-qwen":
         qwen_manager = SimpleQwenMCPManager(mcps_dir=manager.mcps_dir)
         qwen_manager.remove_all_mcps()
     
-    elif args.action == "qwen-config-path":
+    elif action == "qwen-config-path":
         qwen_manager = SimpleQwenMCPManager(mcps_dir=manager.mcps_dir)
         print(qwen_manager.get_qwen_config_path())
+    
+    elif action == "config-show":
+        import pprint
+        config_file = manager.project_root / "config.json"
+        if config_file.exists():
+            with open(config_file, 'r') as f:
+                config = json.load(f)
+            print("Current configuration:")
+            pprint.pprint(config)
+        else:
+            print("Configuration file not found. Using defaults.")
+    
+    elif action == "config-list":
+        config_file = manager.project_root / "config.json"
+        if config_file.exists():
+            with open(config_file, 'r') as f:
+                config = json.load(f)
+            
+            print("MCP Server Configuration List:")
+            print("=" * 60)
+            
+            server_config = config.get("server_config", {})
+            servers = server_config.get("servers", {})
+            
+            if not servers:
+                print("No servers configured.")
+                return
+            
+            # Print header
+            print(f"{'Server Name':<30} {'Enabled':<10} {'Boot':<10} {'Qwen':<10}")
+            print("-" * 60)
+            
+            # Print each server's configuration
+            for server_name, settings in servers.items():
+                enabled = "YES" if settings.get("enabled", False) else "NO"
+                start_on_boot = "YES" if settings.get("start_on_boot", False) else "NO"
+                add_to_qwen = "YES" if settings.get("add_to_qwen", False) else "NO"
+                
+                print(f"{server_name:<30} {enabled:<10} {start_on_boot:<10} {add_to_qwen:<10}")
+            
+            print()
+            print("Legend:")
+            print("  Enabled: Whether the server is enabled in the manager")
+            print("  Boot: Whether the server starts automatically on boot")
+            print("  Qwen: Whether the server is integrated with Qwen")
+        else:
+            print("Configuration file not found. Using defaults.")
+    
+    elif action == "config-edit":
+        config_file = manager.project_root / "config.json"
+        if not config_file.exists():
+            print("Configuration file not found. Nothing to modify.")
+            return
+        
+        if not args.server:
+            print("Please specify a server name to edit.")
+            print("Usage: manager.py config-edit <server-name>")
+            return
+        
+        server_name = args.server
+        
+        # Load current config
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+        
+        # Check if server exists in config
+        servers = config.get("server_config", {}).get("servers", {})
+        if server_name not in servers:
+            print(f"Server '{server_name}' not found in configuration.")
+            print("Available servers:")
+            for name in servers.keys():
+                print(f"  - {name}")
+            return
+        
+        # Get current settings
+        current_settings = servers[server_name]
+        enabled = current_settings.get("enabled", False)
+        start_on_boot = current_settings.get("start_on_boot", False)
+        add_to_qwen = current_settings.get("add_to_qwen", False)
+        
+        print(f"Current configuration for {server_name}:")
+        print(f"  Enabled: {enabled}")
+        print(f"  Start on boot: {start_on_boot}")
+        print(f"  Add to Qwen: {add_to_qwen}")
+        print()
+        
+        # Ask user what to modify
+        print("Which setting would you like to modify?")
+        print("1. Enabled")
+        print("2. Start on boot")
+        print("3. Add to Qwen")
+        print("4. All settings")
+        choice = input("Enter your choice (1-4, or 'q' to quit): ").strip()
+        
+        if choice.lower() == 'q':
+            print("No changes made.")
+            return
+        
+        changes_made = False
+        
+        if choice == '1':
+            current_value = enabled
+            new_value = input(f"Set 'enabled' to (true/false) [current: {current_value}]: ").strip().lower()
+            if new_value in ['true', '1', 'yes', 'y']:
+                servers[server_name]['enabled'] = True
+                changes_made = True
+            elif new_value in ['false', '0', 'no', 'n']:
+                servers[server_name]['enabled'] = False
+                changes_made = True
+            else:
+                print("Invalid input. No changes made.")
+        elif choice == '2':
+            current_value = start_on_boot
+            new_value = input(f"Set 'start_on_boot' to (true/false) [current: {current_value}]: ").strip().lower()
+            if new_value in ['true', '1', 'yes', 'y']:
+                servers[server_name]['start_on_boot'] = True
+                changes_made = True
+            elif new_value in ['false', '0', 'no', 'n']:
+                servers[server_name]['start_on_boot'] = False
+                changes_made = True
+            else:
+                print("Invalid input. No changes made.")
+        elif choice == '3':
+            current_value = add_to_qwen
+            new_value = input(f"Set 'add_to_qwen' to (true/false) [current: {current_value}]: ").strip().lower()
+            if new_value in ['true', '1', 'yes', 'y']:
+                servers[server_name]['add_to_qwen'] = True
+                changes_made = True
+            elif new_value in ['false', '0', 'no', 'n']:
+                servers[server_name]['add_to_qwen'] = False
+                changes_made = True
+            else:
+                print("Invalid input. No changes made.")
+        elif choice == '4':
+            # Modify all settings
+            current_value = enabled
+            new_value = input(f"Set 'enabled' to (true/false) [current: {current_value}]: ").strip().lower()
+            if new_value in ['true', '1', 'yes', 'y']:
+                servers[server_name]['enabled'] = True
+                changes_made = True
+            elif new_value in ['false', '0', 'no', 'n']:
+                servers[server_name]['enabled'] = False
+                changes_made = True
+            else:
+                print("Invalid input for 'enabled'. Skipping.")
+            
+            current_value = start_on_boot
+            new_value = input(f"Set 'start_on_boot' to (true/false) [current: {current_value}]: ").strip().lower()
+            if new_value in ['true', '1', 'yes', 'y']:
+                servers[server_name]['start_on_boot'] = True
+                changes_made = True
+            elif new_value in ['false', '0', 'no', 'n']:
+                servers[server_name]['start_on_boot'] = False
+                changes_made = True
+            else:
+                print("Invalid input for 'start_on_boot'. Skipping.")
+            
+            current_value = add_to_qwen
+            new_value = input(f"Set 'add_to_qwen' to (true/false) [current: {current_value}]: ").strip().lower()
+            if new_value in ['true', '1', 'yes', 'y']:
+                servers[server_name]['add_to_qwen'] = True
+                changes_made = True
+            elif new_value in ['false', '0', 'no', 'n']:
+                servers[server_name]['add_to_qwen'] = False
+                changes_made = True
+            else:
+                print("Invalid input for 'add_to_qwen'. Skipping.")
+        else:
+            print("Invalid choice. No changes made.")
+        
+        if changes_made:
+            # Save the updated config
+            with open(config_file, 'w') as f:
+                json.dump(config, f, indent=2)
+            print(f"Configuration for {server_name} updated successfully.")
+        else:
+            print("No changes were made.")
+    
+    elif action == "list":
+        print("Discovered servers:")
+        for server_name in manager.servers.keys():
+            print(f"  - {server_name}")
+        if not manager.servers:
+            print("  No servers found (all servers are disabled in config)")
 
 
 if __name__ == "__main__":

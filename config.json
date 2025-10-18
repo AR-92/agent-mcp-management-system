@@ -1,0 +1,189 @@
+{
+  "server_config": {
+    "start_on_boot": false,
+    "shutdown_on_exit": false,
+    "environment": "development",
+    "servers": {
+      "dokploy_openapi_mcp_server": {
+        "enabled": true,
+        "start_on_boot": false,
+        "add_to_qwen": true
+      },
+      "backup_restore_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "business_ops_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "chatbot_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "collaboration_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "crm_business_ops_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "customer_feedback_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "discord_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "devops_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "fastmcp_docs_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "firewall_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "gmail_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "go_high_level_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "google_calendar_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "google_docs_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "google_drive_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "google_forms_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "google_meet_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "google_sheets_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "interview_scheduler_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "invoice_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "linux_admin_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "log_viewer_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "mailchimp_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "meta_fastmcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "payment_reminder_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "port_scanner_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "process_manager_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "proposal_generator_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "server_health_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "slack_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "smtp_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "system_monitoring_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "trello_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "twenty_crm_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      },
+      "woocommerce_mcp_server": {
+        "enabled": false,
+        "start_on_boot": false,
+        "add_to_qwen": false
+      }
+    }
+  }
+}

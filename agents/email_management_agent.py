@@ -1,128 +1,22 @@
 """
-Email Management Agent using Strands Agents SDK
+Smtp Agent using Strands Agents SDK
 
-This agent uses the Gmail and SMTP MCPs to handle email operations.
+This agent uses the Smtp MCP to manage related operations.
 """
 
-from strandsagents import Agent
-from typing import Dict, Any, List
-import json
+from strands import Agent
+from mcp.client.stdio import stdio_client
+from mcp import StdioServerParameters
+from strands.tools.mcp import MCPClient
 
 
-def send_email(
-    to: str,
-    subject: str,
-    body: str,
-    cc: str = "",
-    bcc: str = "",
-    attachments: List[str] = []
-) -> Dict[str, Any]:
+def create_stdio_transport():
+    """Create a stdio transport to connect to the Smtp MCP server"""
+    return stdio_client(StdioServerParameters(command="python", args=["-u", "/home/rana/Documents/agent-mcp-managnet-system/mcps/smtp_mcp_server.py"]))
+
+def run_smtp_mcp_server_agent(user_input: str):
     """
-    Send an email using SMTP functionality.
-    
-    Args:
-        to: Recipient email address
-        subject: Email subject
-        body: Email body content
-        cc: CC recipients (comma-separated)
-        bcc: BCC recipients (comma-separated)
-        attachments: List of file paths to attach
-        
-    Returns:
-        Dictionary containing the result of the email sending operation
-    """
-    # This would connect to the SMTP MCP server in a real implementation
-    return {
-        "status": "success",
-        "message": f"Email sent to {to} with subject '{subject}'",
-        "details": {
-            "recipient": to,
-            "subject": subject,
-            "has_attachments": len(attachments) > 0,
-            "attachment_count": len(attachments)
-        }
-    }
-
-
-def read_emails(limit: int = 10, folder: str = "inbox") -> List[Dict[str, Any]]:
-    """
-    Read emails from a specified folder.
-    
-    Args:
-        limit: Maximum number of emails to retrieve
-        folder: Folder to read from (e.g., inbox, sent, drafts)
-        
-    Returns:
-        List of dictionaries containing email information
-    """
-    # This would connect to the Gmail MCP server in a real implementation
-    return [
-        {
-            "id": f"email_{i}",
-            "subject": f"Sample Email Subject {i}",
-            "sender": f"sender{i}@example.com",
-            "date": "2023-10-02",
-            "snippet": f"This is a sample email snippet for email {i}"
-        }
-        for i in range(1, limit + 1)
-    ]
-
-
-def create_calendar_event(
-    title: str,
-    start_time: str,
-    end_time: str,
-    description: str = "",
-    attendees: List[str] = [],
-    location: str = ""
-) -> Dict[str, Any]:
-    """
-    Create a calendar event using Google Calendar MCP.
-    
-    Args:
-        title: Title of the event
-        start_time: Start time in ISO format
-        end_time: End time in ISO format
-        description: Event description
-        attendees: List of attendee email addresses
-        location: Event location
-        
-    Returns:
-        Dictionary containing the created event information
-    """
-    # This would connect to the Google Calendar MCP server in a real implementation
-    return {
-        "status": "created",
-        "event_id": "event_12345",
-        "title": title,
-        "start_time": start_time,
-        "end_time": end_time,
-        "attendees": attendees
-    }
-
-
-# Create an email management agent that can send emails, read emails, and create calendar events
-agent = Agent(
-    system_prompt="You are an email management assistant. You can send emails, read emails from various folders, and create calendar events. When asked to schedule meetings, suggest creating calendar events and sending confirmation emails. Be helpful and provide clear information about email and calendar operations."
-)
-
-
-def setup_email_management_agent():
-    """Set up the email management agent with tools."""
-    try:
-        agent.add_tool(send_email)
-        agent.add_tool(read_emails)
-        agent.add_tool(create_calendar_event)
-        print("Email management tools successfully registered with the agent.")
-        return True
-    except AttributeError as e:
-        print(f"Note: Tool registration API may vary depending on the specific Strands implementation. Error: {e}")
-        return False
-
-
-def run_email_agent(user_input: str):
-    """
-    Run the email management agent with the given user input.
+    Run the Smtp agent with the given user input.
     
     Args:
         user_input: The input from the user
@@ -130,35 +24,50 @@ def run_email_agent(user_input: str):
     Returns:
         The agent's response
     """
-    try:
-        response = agent.run(user_input)
-        return response
-    except ImportError:
-        # If strandsagents is not available, return a simulated response
-        return f"Simulated response: Email management agent. You requested: '{user_input}'"
-    except Exception as e:
-        return f"Error processing your request: {str(e)}"
+    # Create an MCP client
+    stdio_mcp_client = MCPClient(create_stdio_transport)
+    
+    with stdio_mcp_client:
+        try:
+            tools = stdio_mcp_client.list_tools_sync()
+            agent = Agent(
+                system_prompt="You are a Smtp assistant. You can perform operations related to smtp. When asked about smtp operations, provide detailed information and perform requested actions.",
+                tools=tools
+            )
+            print("Smtp tools successfully registered with the agent.")
+        except Exception as e:
+            print(f"Error connecting to MCP server: {e}")
+            # Fallback to basic agent without tools
+            agent = Agent(
+                system_prompt="You are a Smtp assistant. You can perform operations related to smtp. When asked about smtp operations, provide detailed information and perform requested actions."
+            )
+    
+        try:
+            response = agent.run(user_input)
+            return response
+        except ImportError:
+            # If strands is not available, return a simulated response
+            return f"Simulated response: Smtp agent. You requested: '{user_input}'"
+        except Exception as e:
+            return f"Error processing your request: {str(e)}"
 
 
 def main():
-    """Main function to run the email management agent."""
-    # Set up tools
-    tools_setup = setup_email_management_agent()
+    """Main function to run the Smtp agent."""
     
-    print("Email Management Agent")
+    print("Smtp Agent")
     print("This agent can:")
-    print("- Send emails (e.g., 'send an email to user@example.com with subject Hello')")
-    print("- Read emails (e.g., 'read my last 5 emails')")
-    print("- Create calendar events (e.g., 'schedule a meeting tomorrow at 10am')")
+    print("- Perform operations related to smtp")
+    print("- Handle various tasks based on available MCP tools")
     print("Type 'quit' to exit.\n")
     
     while True:
         user_input = input("You: ")
         if user_input.lower() in ['quit', 'exit', 'bye']:
-            print("Agent: Goodbye! Email management assistant signing off.")
+            print(f"Agent: Goodbye! Smtp assistant signing off.")
             break
             
-        response = run_email_agent(user_input)
+        response = run_smtp_mcp_server_agent(user_input)
         print(f"Agent: {response}\n")
 
 

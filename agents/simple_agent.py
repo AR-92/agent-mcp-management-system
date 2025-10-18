@@ -1,155 +1,73 @@
 """
-Simple Agent Example using Strands Agents SDK
+Meta Fastmcp Agent using Strands Agents SDK
 
-This is a basic agent implementation that demonstrates:
-- Creating a simple agent
-- Adding basic tools
-- Running the agent
+This agent uses the Meta Fastmcp MCP to manage related operations.
 """
 
-from strandsagents import Agent
-import json
-from datetime import datetime
-from typing import Dict, Any, Union
+from strands import Agent
+from mcp.client.stdio import stdio_client
+from mcp import StdioServerParameters
+from strands.tools.mcp import MCPClient
 
 
-# Define tools as functions with proper type hints and docstrings
-def get_current_time() -> Dict[str, str]:
+def create_stdio_transport():
+    """Create a stdio transport to connect to the Meta Fastmcp MCP server"""
+    return stdio_client(StdioServerParameters(command="python", args=["-u", "/home/rana/Documents/agent-mcp-managnet-system/mcps/meta_fastmcp_server.py"]))
+
+def run_meta_fastmcp_server_agent(user_input: str):
     """
-    Get the current time.
-    
-    Returns:
-        A dictionary containing the current time in ISO format.
-    """
-    return {"current_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-
-
-def simple_calculator(operation: str, a: float, b: float) -> Dict[str, Union[float, str]]:
-    """
-    A simple calculator that performs basic arithmetic operations.
+    Run the Meta Fastmcp agent with the given user input.
     
     Args:
-        operation: The operation to perform. One of 'add', 'subtract', 'multiply', 'divide'.
-        a: The first operand.
-        b: The second operand.
+        user_input: The input from the user
         
     Returns:
-        A dictionary containing the result of the calculation or an error message.
+        The agent's response
     """
-    try:
-        if operation.lower() == "add":
-            result = a + b
-        elif operation.lower() == "subtract":
-            result = a - b
-        elif operation.lower() == "multiply":
-            result = a * b
-        elif operation.lower() == "divide":
-            if b == 0:
-                return {"error": "Cannot divide by zero"}
-            result = a / b
-        else:
-            return {"error": f"Unknown operation: {operation}. Use add, subtract, multiply, or divide."}
-        
-        return {"result": result, "operation_performed": f"{a} {operation} {b} = {result}"}
-    except Exception as e:
-        return {"error": f"Calculation error: {str(e)}"}
-
-
-def echo_message(message: str) -> Dict[str, str]:
-    """
-    Echo back the provided message.
+    # Create an MCP client
+    stdio_mcp_client = MCPClient(create_stdio_transport)
     
-    Args:
-        message: The message to echo back.
-        
-    Returns:
-        A dictionary containing the original message.
-    """
-    return {"echo": message}
-
-
-def get_system_info() -> Dict[str, str]:
-    """
-    Get basic system information.
+    with stdio_mcp_client:
+        try:
+            tools = stdio_mcp_client.list_tools_sync()
+            agent = Agent(
+                system_prompt="You are a Meta Fastmcp assistant. You can perform operations related to meta fastmcp. When asked about meta fastmcp operations, provide detailed information and perform requested actions.",
+                tools=tools
+            )
+            print("Meta Fastmcp tools successfully registered with the agent.")
+        except Exception as e:
+            print(f"Error connecting to MCP server: {e}")
+            # Fallback to basic agent without tools
+            agent = Agent(
+                system_prompt="You are a Meta Fastmcp assistant. You can perform operations related to meta fastmcp. When asked about meta fastmcp operations, provide detailed information and perform requested actions."
+            )
     
-    Returns:
-        A dictionary containing basic system information.
-    """
-    import platform
-    return {
-        "system": platform.system(),
-        "node": platform.node(),
-        "release": platform.release(),
-        "version": platform.version(),
-        "machine": platform.machine(),
-        "processor": platform.processor()
-    }
-
-
-# Create the agent with a system prompt
-agent = Agent(
-    system_prompt="You are a helpful assistant. You can provide the current time, perform calculations, echo messages, or provide system information. Always be friendly and concise in your responses. Use the appropriate tool when needed."
-)
-
-
-def setup_tools():
-    """Set up tools for the agent."""
-    try:
-        # Add tools to the agent - this follows the API reference pattern
-        # The exact syntax may depend on the specific implementation of Strands
-        agent.add_tool(get_current_time)
-        agent.add_tool(simple_calculator)
-        agent.add_tool(echo_message)
-        agent.add_tool(get_system_info)
-        print("Tools successfully registered with the agent.")
-        return True
-    except AttributeError as e:
-        print(f"Note: Tool registration API may vary depending on the specific Strands implementation. Error: {e}")
-        return False
-
-
-def run_simple_agent(user_input: str):
-    """
-    Run the simple agent with the given user input.
-    
-    Args:
-        user_input: The input from the user.
-        
-    Returns:
-        The agent's response.
-    """
-    try:
-        # Try to run the agent with the provided input
-        response = agent.run(user_input)
-        return response
-    except ImportError:
-        # If strandsagents is not available, return a simulated response
-        return f"Simulated response: I'm a simple agent. You said: '{user_input}'. Current time is {datetime.now().strftime('%H:%M:%S')}."
-    except Exception as e:
-        # For any other error, return an error response
-        return f"Error processing your request: {str(e)}"
+        try:
+            response = agent.run(user_input)
+            return response
+        except ImportError:
+            # If strands is not available, return a simulated response
+            return f"Simulated response: Meta Fastmcp agent. You requested: '{user_input}'"
+        except Exception as e:
+            return f"Error processing your request: {str(e)}"
 
 
 def main():
-    """Main function to run the simple agent in CLI mode."""
-    # Set up tools
-    tools_setup = setup_tools()
+    """Main function to run the Meta Fastmcp agent."""
     
-    print("Simple Agent Example")
+    print("Meta Fastmcp Agent")
     print("This agent can:")
-    print("- Tell you the current time (ask 'What time is it?' or 'current time')")
-    print("- Perform calculations (e.g., 'add 5 and 3', 'multiply 4 and 6')")
-    print("- Echo messages (e.g., 'echo hello world')")
-    print("- Get system information (ask 'system info' or 'system information')")
+    print("- Perform operations related to meta fastmcp")
+    print("- Handle various tasks based on available MCP tools")
     print("Type 'quit' to exit.\n")
     
     while True:
         user_input = input("You: ")
         if user_input.lower() in ['quit', 'exit', 'bye']:
-            print("Agent: Goodbye!")
+            print(f"Agent: Goodbye! Meta Fastmcp assistant signing off.")
             break
             
-        response = run_simple_agent(user_input)
+        response = run_meta_fastmcp_server_agent(user_input)
         print(f"Agent: {response}\n")
 
 
